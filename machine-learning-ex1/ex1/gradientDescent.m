@@ -17,14 +17,7 @@ for iter = 1:num_iters
     %       of the cost function (computeCost) and gradient here.
     %
 
-    derivativeOne = 0;
-    derivativeTwo = 0;
-    for i = 1:m
-        derivativeOne += (theta(1)*X(i, 1) + theta(2)*X(i, 2) - y(i));
-        derivativeTwo += (theta(1)*X(i, 1) + theta(2)*X(i, 2) - y(i)) * X(i, 2);
-    endfor
-    theta(1) = theta(1) - alpha * (1 / m) * derivativeOne;
-    theta(2) = theta(2) - alpha * (1 / m) * derivativeTwo;
+    theta = theta - (alpha / m) * (X' * (X * theta - y));
 
     % ============================================================
 
