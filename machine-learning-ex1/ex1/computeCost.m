@@ -14,13 +14,14 @@ J = 0;
 %               You should set J to the cost.
 
 
-distanceSum = 0
-for i = 1:m
-    distanceSum += (theta(1)*X(i, 1) + theta(2)*X(i, 2) - y(i)) ^ 2;
-endfor
+% distanceSum = 0;
+% for i = 1:m
+%     distanceSum += (theta(1)*X(i, 1) + theta(2)*X(i, 2) - y(i)) ^ 2;
+% endfor
 
-J = (1 / (2 * m)) * distanceSum;
+% distanceSum
 
+J = (1 / (2 * m)) * sum((X * theta - y) .^ 2);
 
 
 % =========================================================================
