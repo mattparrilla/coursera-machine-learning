@@ -31,9 +31,15 @@ X = [ones(m, 1) X];
 %       
 
 
+% return hypothesis matrix [10 x 5000] in shape most easily consumed by max()
+g_z = sigmoid(all_theta * X');
 
+% max calculates probabilities per column, _ is the max probability, k is the index
+% of that maximum probability value. Result is [1 x 5000]
+[_, k] = max(g_z);
 
-
+% get transpose of k, since we are supposed to return vector
+p = k';
 
 
 % =========================================================================
