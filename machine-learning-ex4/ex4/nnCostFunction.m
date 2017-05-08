@@ -52,57 +52,47 @@ y_matrix = eye(num_labels); % 10 x 10
 cost = 0;
 DEL_1 = zeros(size(Theta1)); % 25 x 401
 DEL_2 = zeros(size(Theta2)); % 10 x 26
+REG_GRAD_1 = zeros(size(Theta1)); % 25 x 401
+REG_GRAD_2 = zeros(size(Theta2)); % 10 x 26
 for i=1 : m
     output_value = y(i); % the value is 1-10 and is also the index of our y_matrix
     % get vector representation of our output value
     y_i = y_matrix(:, output_value); % 10 x 1
-    for k=1 : num_labels
-        % forward
-        y_k = y_i(k); % scalar
-        x_1 = X(i, :)'; % 400 x 1
-        a_1 = [1; x_1(:)]; % 401 x 1
-        z_2 = Theta1 * a_1; % 25 x 1
-        g_2 = sigmoid(z_2); % 25 x 1
-        a_2 = [1; g_2(:)]; % 26 x 1
-        z_3 = Theta2 * a_2; % 10 x 1
-        h = sigmoid(z_3); % 10 x 1
-        a_3 = h;
 
-        % cost
-        cost = cost + (-y_k * log(h(k)))  - (1 - y_k) * log(1 - h(k));
+    % forward
+    x_1 = X(i, :)'; % 400 x 1
+    a_1 = [1; x_1(:)]; % 401 x 1
+    z_2 = Theta1 * a_1; % 25 x 1
+    g_2 = sigmoid(z_2); % 25 x 1
+    a_2 = [1; g_2(:)]; % 26 x 1
+    z_3 = Theta2 * a_2; % 10 x 1
+    h = sigmoid(z_3); % 10 x 1
+    a_3 = h;
 
-        % backward
-        del_3 = a_3 - y_i; % 10 x 1
-        % remove bias unit weighting from Theta2
-        del_2 = (Theta2(:,2:end)' * del_3) .* sigmoidGradient(z_2); % 25 x 1
-        del_2
-        size(del_2)
-        del_3
-        size(del_3)
+    % cost
+    cost = cost + (-y_i' * log(h))  - (1 - y_i)' * log(1 - h);
 
+    % backward
+    del_3 = a_3 - y_i; % 10 x 1
+    % remove bias unit weighting from Theta2
+    del_2 = (Theta2(:,2:end)' * del_3) .* sigmoidGradient(z_2); % 25 x 1
 
-        % theta gradient - same dimensions as theta
-        % a matrix of a particular parameter values accuracy
-        DEL_2 = DEL_2 + del_3 * a_2'; % 10 x 26
-        DEL_1 = DEL_1 + del_2 + a_1'; % 25 x 401
-        DEL_1
-        DEL_2
-        z_2
-        sigmoidGradient(z_2)
-        a_2
-        a_3
-    endfor
+    % theta gradient - same dimensions as theta
+    % a matrix of a particular parameter values accuracy
+    DEL_2 = DEL_2 + del_3 * a_2'; % 10 x 26
+    DEL_1 = DEL_1 + del_2 * a_1'; % 25 x 401
 endfor
 
-Theta2_grad = (1 / m) * DEL_2;
-Theta1_grad = (1 / m) * DEL_1;
 % Insight
 % Theta gradients are a matrix of the accumulative weighted differences
 % between node performance of predictions and the data. Missed that one :-P
 
-
-Theta1_grad = (1 / m) * DEL_1; % 10 x 26
-Theta2_grad = (1 / m) * DEL_2; % 25 * 401
+REG_GRAD_1 = (lambda / m) * Theta1;
+REG_GRAD_1(:,1) = 0; % replace first column with zeros
+REG_GRAD_2 = (lambda / m) * Theta2;
+REG_GRAD_2(:,1) = 0; % replace first column with zeros
+Theta1_grad = (1 / m) * DEL_1 + REG_GRAD_1; % 10 x 26
+Theta2_grad = (1 / m) * DEL_2 + REG_GRAD_2; % 25 * 401
 
 % IMPORTANT NOTE: theta for the regularization term excludes the bias term
 s_array = [input_layer_size, hidden_layer_size, num_labels];
